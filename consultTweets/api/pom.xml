@@ -23,6 +23,11 @@
 			<artifactId>application</artifactId>
 			<version>${project.parent.version}</version>
 		</dependency>
+		<dependency>
+			<groupId>be.befootint.consulttweets</groupId>
+			<artifactId>social</artifactId>
+			<version>${project.parent.version}</version>
+		</dependency>
 		<!-- SPRING MVC -->
 		<dependency>
 			<groupId>org.springframework</groupId>

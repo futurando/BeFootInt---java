@@ -14,7 +14,18 @@
 
 	<!-- Replaces ${placeholders} with values in testdb.properties -->
 	<context:property-placeholder
-		location="classpath:testdb/testdb.properties" />
+		location="classpath:testdb/testdb.properties"
+		ignore-unresolvable="true"/>
+		
+	<!-- Define the other the old-fashioned way, with 'ignoreUnresolvablePlaceholders' set to TRUE -->
+<bean class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+        <property name="locations">
+            <list>
+                <value>classpath*:database.properties</value>
+            </list>
+        </property>
+       <property name="ignoreUnresolvablePlaceholders" value="true"/>
+</bean>
 
 	<!-- Creates an in-memory "rewards" database populated with test data for 
 		fast testing -->

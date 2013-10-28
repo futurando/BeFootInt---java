@@ -5,6 +5,9 @@ package be.befootint.consulttweets.social.twitter;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.social.oauth2.AccessGrant;
+import org.springframework.social.oauth2.OAuth2Operations;
+import org.springframework.social.oauth2.OAuth2Template;
 import org.springframework.social.twitter.api.Twitter;
 import org.springframework.social.twitter.api.impl.TwitterTemplate;
 
@@ -13,8 +16,10 @@ import org.springframework.social.twitter.api.impl.TwitterTemplate;
  * 
  */
 public class TweetConnector {
-	
-    private final static Logger LOGGER = LoggerFactory.getLogger(TweetConnector.class);
+
+	private final static Logger LOGGER = LoggerFactory
+			.getLogger(TweetConnector.class);
+	private final static String baseUrl = "https://api.twitter.com/";
 
 	// The application's consumer key
 	private String consumerKey;
@@ -29,30 +34,19 @@ public class TweetConnector {
 	private String accessTokenSecret;
 
 	private Twitter twitter;
-	
-	private boolean isConnected = false;
 
 	TweetConnector(String consumerKey, String consumerSecret) {
 		this.consumerKey = consumerKey;
 		this.consumerSecret = consumerSecret;
 	}
-	
-	TweetConnector(String consumerKey, String consumerSecret, String accessToken,
-			String accessTokenSecret) {
-		this.consumerKey = consumerKey;
-		this.consumerSecret = consumerSecret;
-		this.setAccessToken(accessToken);
-		this.setAccessTokenSecret(accessTokenSecret);
 
-		setTwitter(new TwitterTemplate(consumerKey, consumerSecret, accessToken,
-				accessTokenSecret));
-		if(getTwitter().isAuthorized()){
-			LOGGER.info("connected to twitter");
-			setConnected(true);
-		}
-	}
-	
 	public String getAccessToken() {
+		if (accessToken == null) {
+			OAuth2Operations operations = new OAuth2Template(consumerKey,
+					consumerSecret, "", null, baseUrl + "oauth2/token");
+			AccessGrant accessGrant = operations.authenticateClient();
+			setAccessToken(accessGrant.getAccessToken());
+		}
 		return accessToken;
 	}
 
@@ -71,25 +65,33 @@ public class TweetConnector {
 	public Twitter getTwitter() {
 		return twitter;
 	}
-	
-	public void setTwitter(Twitter twitter){
+
+	public void setTwitter(Twitter twitter) {
 		this.twitter = twitter;
 	}
 
-	public void setTwitter(String accessToken, String accessTokenSecret) {
-		setAccessToken(accessToken);
-		setAccessTokenSecret(accessTokenSecret);
-		this.twitter = new TwitterTemplate(consumerKey, consumerSecret, getAccessToken(), getAccessTokenSecret());
+	public Twitter connectTwitterAppOnly() {
+		if (this.twitter == null) {
+			setTwitter(new TwitterTemplate(getAccessToken()));
+		}
+		return this.twitter;
 	}
-
-	public boolean isConnected() {
-		return isConnected;
-	}
-
-	public void setConnected(boolean isConnected) {
-		this.isConnected = isConnected;
-	}
-
 	
-
+	/**
+	 * method to check if the connection is done on behalf of a certain user
+	 * @return
+	 */
+	public boolean isConnected() {
+		if (getTwitter() != null) {
+			if (getTwitter().isAuthorized()) {
+				LOGGER.info("user connection");
+				return true;
+			}else{
+				LOGGER.info("application connection");
+				return false;
+			}
+		};
+		LOGGER.info("no connection");
+		return false;
+	}
 }

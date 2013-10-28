@@ -5,12 +5,18 @@
 		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.2.xsd">
 
 
-    <context:property-placeholder location="classpath:spring/social/twitter.properties"/>
-    
-	<bean id="tweetConnector" class="be.befootint.consulttweets.social.twitter.TweetConnector">
+	<context:property-placeholder
+		location="classpath:spring/social/twitter.properties"
+		ignore-unresolvable="true"/>
+
+	<bean id="tweetConnector"
+		class="be.befootint.consulttweets.social.twitter.TweetConnector">
 		<constructor-arg value="${consumerKey}" />
 		<constructor-arg value="${consumerSecret}" />
-		<constructor-arg value="${accessToken}" />
-		<constructor-arg value="${accessTokenSecret}" />
+		<!-- <constructor-arg value="${accessToken}" /> -->
+		<!-- <constructor-arg value="${accessTokenSecret}" /> -->
+	</bean>
+	<bean id="tweetReader" class="be.befootint.consulttweets.social.twitter.TweetReader">
+		<constructor-arg ref="tweetConnector" />
 	</bean>
 </beans>

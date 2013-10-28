@@ -11,8 +11,9 @@
 							http://www.springframework.org/schema/context
 							http://www.springframework.org/schema/context/spring-context-3.2.xsd">
 
-	<!-- Import the application config from the "application" project -->
+	<!-- Import the application config from the other projects -->
 	<import resource="classpath:spring/application/root-config.xml" />
+	<import resource="classpath:spring/social/social-config.xml"/>
 
 	<!-- The configuration of the tweet consult manager application. -->
 	<context:annotation-config />
